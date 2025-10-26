@@ -3,18 +3,216 @@
         xmlns:vm="using:CarMonitor.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        
+        xmlns:converters="using:CarMonitor.Converters" 
+        
+        mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
         x:Class="CarMonitor.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
-        Icon="/Assets/avalonia-logo.ico"
-        Title="CarMonitor">
+        Title="OBD2 Dashboard"
+        Background="#1A1A1A"
+        Width="1200" Height="800">
 
+    <Window.Resources>
+        <converters:TemperatureToBrushConverter x:Key="TempToBrushConverter" />
+    </Window.Resources>
+    
     <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-    <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
 
+        <!-- Left Sidebar -->
+        <Border Grid.Column="0" Background="Black" BorderBrush="#333333" BorderThickness="0,0,1,0">
+            <StackPanel Margin="20">
+                <!-- Header -->
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,30">
+                    <PathIcon Data="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z" 
+                             Foreground="#58b2f6" Width="24" Height="24" Margin="0,0,10,0"/>
+                    <TextBlock Text="OBD2 Dashboard" FontSize="18" FontWeight="Bold" Foreground="White"/>
+                </StackPanel>
+
+                <!-- Connected Car Info -->
+                <Border Background="#080C15" CornerRadius="8" Padding="15" Margin="0,0,0,20">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10">
+                            <Image Source="/Assets/Porsche_Logo.png" Width="64" Height="64"></Image>
+                            <TextBlock Text="{Binding ConnectedCarName}"
+                                       FontSize="16"
+                                       FontWeight="Bold"
+                                       Foreground="White"
+                                       Margin="12,0,0,0"
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
+                        <TextBlock Text="Connected" Foreground="#4AD97C" FontSize="12" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Navigation Menu -->
+                <StackPanel Margin="0,0,0,30">
+                    <Button Content="Dashboard" Background="#2A3B4C" Foreground="White" BorderThickness="0" 
+                            CornerRadius="5" Padding="15,10" Margin="0,0,0,5" HorizontalAlignment="Stretch"/>
+                    <Button Content="Diagnostics" Background="Transparent" Foreground="#CCCCCC" BorderThickness="0" 
+                            CornerRadius="5" Padding="15,10" Margin="0,0,0,5" HorizontalAlignment="Stretch"/>
+                    <Button Content="Performance" Background="Transparent" Foreground="#CCCCCC" BorderThickness="0" 
+                            CornerRadius="5" Padding="15,10" Margin="0,0,0,5" HorizontalAlignment="Stretch"/>
+                    <Button Content="History" Background="Transparent" Foreground="#CCCCCC" BorderThickness="0" 
+                            CornerRadius="5" Padding="15,10" HorizontalAlignment="Stretch"/>
+                </StackPanel>
+
+                <!-- Bottom Menu -->
+                <StackPanel>
+                    <Button Content="Settings" Background="Transparent" Foreground="#CCCCCC" BorderThickness="0" 
+                            CornerRadius="5" Padding="15,10" Margin="0,0,0,5" HorizontalAlignment="Stretch"/>
+                    <Button Content="Logout" Background="Transparent" Foreground="#CCCCCC" BorderThickness="0" 
+                            CornerRadius="5" Padding="15,10" HorizontalAlignment="Stretch"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Main Content Area -->
+        <ScrollViewer Grid.Column="1" Background="#040711" Padding="20">
+            <StackPanel>
+                <!-- Top Row - Three Main Cards -->
+                <Grid Margin="0,0,0,20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Speed Card -->
+                    <Border Grid.Column="0" Background="#111827" CornerRadius="10" Padding="20" Margin="0,0,10,0">
+                        <StackPanel>
+                            <TextBlock Text="Speed (MPH)" FontSize="14" Foreground="#CCCCCC" Margin="0,0,0,10"/>
+                            <TextBlock Text="{Binding VehicleData.Speed, StringFormat='{}{0:F0}'}" FontSize="36" FontWeight="Bold" Foreground="White" Margin="0,0,0,5"/>
+                            <TextBlock Text="Real-time ↑+2%" FontSize="12" Foreground="#4AD97C" Margin="0,0,0,15"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Engine RPM Card -->
+                    <Border Grid.Column="1" Background="#111827" CornerRadius="10" Padding="20" Margin="5,0">
+                        <StackPanel>
+                            <TextBlock Text="Engine RPM" FontSize="14" Foreground="#CCCCCC" Margin="0,0,0,10"/>
+                            <TextBlock Text="{Binding VehicleData.Rpm}" FontSize="36" FontWeight="Bold" Foreground="White" Margin="0,0,0,5"/>
+                            <TextBlock Text="Real-time ↓-1%" FontSize="12" Foreground="#F23005" Margin="0,0,0,15"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Alerts & Diagnostics Card -->
+                    <Border Grid.Column="2" Background="#111827" CornerRadius="10" Padding="20" Margin="10,0,0,0">
+                        <StackPanel>
+                            <TextBlock Text="Alerts &amp; Diagnostics" FontSize="14" Foreground="#CCCCCC" Margin="0,0,0,15"/>
+                            
+                            <!-- Warning Lights -->
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
+                            </StackPanel>
+
+                            <TextBlock Text="Diagnostic Trouble Codes (DTCs)" FontSize="12" Foreground="#CCCCCC" Margin="0,0,0,10"/>
+                            
+                            <!-- DTC 1 -->
+                            <Border Background="#271C2A" CornerRadius="5" Padding="10" Margin="0,0,0,5">
+                                <StackPanel>
+                                    <TextBlock Text="P0420" FontWeight="Bold" Foreground="#F97170" FontSize="12"/>
+                                    <TextBlock Text="Catalyst System Efficiency Below Threshold" FontSize="10" Foreground="#CCCCCC"/>
+                                </StackPanel>
+                            </Border>
+                            
+                            <!-- DTC 2 -->
+                            <Border Background="#262624" CornerRadius="5" Padding="10">
+                                <StackPanel>
+                                    <TextBlock Text="B1002" FontWeight="Bold" Foreground="#F2BB16" FontSize="12"/>
+                                    <TextBlock Text="Airbag Deployment Control Module" FontSize="10" Foreground="#CCCCCC"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- Bottom Row - Six Metric Cards -->
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Fuel Level -->
+                    <Border Grid.Row="0" Grid.Column="0" Background="#121826" CornerRadius="8" Padding="15" Margin="0,0,10,10">
+                        <StackPanel>
+                            <TextBlock Text="Fuel Level" FontSize="12" Foreground="#CCCCCC" Margin="0,0,0,5"/>
+                            <TextBlock Text="{Binding VehicleData.FuelLevel, StringFormat='{}{0:F0}%'}" FontSize="20" FontWeight="Bold" Foreground="White" Margin="0,0,0,10"/>
+                            <ProgressBar Minimum="0"
+                                         Maximum="100"
+                                         Value="{Binding VehicleData.FuelLevel}"
+                                         Height="8"
+                                         BorderThickness="0"
+                                         Background="#111827"
+                                         Foreground="#00FF00"
+                                         CornerRadius="4" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Engine Temp -->
+                    <Border Grid.Row="0" Grid.Column="1" Background="#111827" CornerRadius="8" Padding="15" Margin="5,0,5,10">
+                        <StackPanel>
+                            <TextBlock Text="Engine Temp" FontSize="12" Foreground="#CCCCCC" Margin="0,0,0,5"/>
+                            <TextBlock Text="{Binding VehicleData.EngineTemp, StringFormat='{}{0:F0}°C'}" FontSize="20" FontWeight="Bold" Foreground="White" Margin="0,0,0,10"/>
+                            <ProgressBar Minimum="0"
+                                         Maximum="120" 
+                                         Value="{Binding VehicleData.EngineTemp}"
+                                         Height="8"
+                                         BorderThickness="0"
+                                         Background="#1A1A1A"
+             
+                                         Foreground="{Binding VehicleData.EngineTemp, Converter={StaticResource TempToBrushConverter}}"
+             
+                                         CornerRadius="4" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Tire Pressure -->
+                    <Border Grid.Row="0" Grid.Column="2" Background="#111827" CornerRadius="8" Padding="15" Margin="10,0,0,10">
+                        <StackPanel>
+                            <TextBlock Text="Tire Pressure" FontSize="12" Foreground="#CCCCCC" Margin="0,0,0,5"/>
+                            <TextBlock Text="{Binding VehicleData.TirePressure, StringFormat='{}{0:F0} PSI'}" FontSize="20" FontWeight="Bold" Foreground="White"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Battery -->
+                    <Border Grid.Row="1" Grid.Column="0" Background="#111827" CornerRadius="8" Padding="15" Margin="0,0,10,0">
+                        <StackPanel>
+                            <TextBlock Text="Battery" FontSize="12" Foreground="#CCCCCC" Margin="0,0,0,5"/>
+                            <TextBlock Text="{Binding VehicleData.BatteryVoltage, StringFormat='{}{0:F1} V'}" FontSize="20" FontWeight="Bold" Foreground="White"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Fuel Economy -->
+                    <Border Grid.Row="1" Grid.Column="1" Background="#111827" CornerRadius="8" Padding="15" Margin="5,0">
+                        <StackPanel>
+                            <TextBlock Text="Fuel Econ." FontSize="12" Foreground="#CCCCCC" Margin="0,0,0,5"/>
+                            <TextBlock Text="{Binding VehicleData.FuelEconomy, StringFormat='{}{0:F0} MPG'}" FontSize="20" FontWeight="Bold" Foreground="White"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Intake Temp -->
+                    <Border Grid.Row="1" Grid.Column="2" Background="#111827" CornerRadius="8" Padding="15" Margin="10,0,0,0">
+                        <StackPanel>
+                            <TextBlock Text="Intake Temp" FontSize="12" Foreground="#CCCCCC" Margin="0,0,0,5"/>
+                            <TextBlock Text="{Binding VehicleData.IntakeTemp, StringFormat='{}{0:F0}°C'}" FontSize="20" FontWeight="Bold" Foreground="White"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
 </Window>
