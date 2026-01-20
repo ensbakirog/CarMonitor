@@ -15,6 +15,7 @@
 
     <Window.Resources>
         <converters:TemperatureToBrushConverter x:Key="TempToBrushConverter" />
+        <converters:BooleanToConnectionStatusConverter x:Key="BoolToConnectionStatusConverter" />
     </Window.Resources>
     
     <Design.DataContext>
@@ -49,7 +50,9 @@
                                        Margin="12,0,0,0"
                                        VerticalAlignment="Center" />
                         </StackPanel>
-                        <TextBlock Text="Connected" Foreground="#4AD97C" FontSize="12" HorizontalAlignment="Center"/>
+                        <TextBlock Text="{Binding IsConnected, Converter={StaticResource BoolToConnectionStatusConverter}, TargetNullValue='Disconnected'}" 
+                                   Foreground="{Binding IsConnected, Converter={StaticResource BoolToConnectionStatusConverter}}" 
+                                   FontSize="12" HorizontalAlignment="Center"/>
                     </StackPanel>
                 </Border>
 
